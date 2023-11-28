@@ -238,15 +238,29 @@ via bracket notation and the string we got back from OpenAI, like this:
 `availableFunctions["getLocation"]`.
 
 ```js
-const { finish_reason, message } = response.choices[0];
+async function agent(userInput) {
+    messages.push({
+        role: "user",
+        content: userInput,
+    });
 
-if (finish_reason === "function_call") {
-  const functionName = message.function_call.name;
-  const functionToCall = availableFunctions[functionName];
-  const functionArgs = JSON.parse(message.function_call.arguments);
-  const functionArgsArr = Object.values(functionArgs);
-  const functionResponse = await functionToCall.apply(null, functionArgsArr);
-  console.log(functionResponse);
+    const response = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo-16k", // "gpt-4",
+        messages: messages,
+        functions: functionDefinitions,
+    });
+    const { finish_reason, message } = response.choices[0];
+ 
+    if (finish_reason === "function_call") {
+      const functionName = message.function_call.name;
+      const functionToCall = availableFunctions[functionName];
+      const functionArgs = JSON.parse(message.function_call.arguments);
+      const functionArgsArr = Object.values(functionArgs);
+      const functionResponse = await functionToCall.apply(null, functionArgsArr);
+      return functionResponse;
+    }
+
+    return null;
 }
 ```
 
@@ -255,12 +269,46 @@ the function: `message.function_call.arguments`.
 However, we won't need any arguments for this first function call.
 
 If we run the code again with the same input
-(`"Where am I located right now?"`), we'll see that `functionResponse`
-is an object filled with location about where the user is located right
-now. In my case, that is Oslo, Norway.
-
 ```js
-{ip: "193.212.60.170", network: "193.212.60.0/23", version: "IPv4", city: "Oslo", region: "Oslo County", region_code: "03", country: "NO", country_name: "Norway", country_code: "NO", country_code_iso3: "NOR", country_capital: "Oslo", country_tld: ".no", continent_code: "EU", in_eu: false, postal: "0026", latitude: 59.955, longitude: 10.859, timezone: "Europe/Oslo", utc_offset: "+0200", country_calling_code: "+47", currency: "NOK", currency_name: "Krone", languages: "no,nb,nn,se,fi", country_area: 324220, country_population: 5314336, asn: "AS2119", org: "Telenor Norge AS"}
+const response = await agent("Where am I located right now?");
+console.log("Chosen function:", deb(response));
+```
+
+we'll see that `functionResponse` is an object filled with location about where the user is located right now. In my case, that is San Cristobal de La Laguna, Spain.
+
+```
+➜  cookbook-location-and-weather-per-harald git:(function-call) ✗ node index.mjs
+```
+```js
+Chosen function: {
+  ip: '193.145.124.209',
+  network: '193.145.124.128/25',
+  version: 'IPv4',
+  city: 'San Cristóbal de La Laguna',
+  region: 'Canary Islands',
+  region_code: 'CN',
+  country: 'ES',
+  country_name: 'Spain',
+  country_code: 'ES',
+  country_code_iso3: 'ESP',
+  country_capital: 'Madrid',
+  country_tld: '.es',
+  continent_code: 'EU',
+  in_eu: true,
+  postal: '38108',
+  latitude: 28.4657,
+  longitude: -16.3086,
+  timezone: 'Atlantic/Canary',
+  utc_offset: '+0000',
+  country_calling_code: '+34',
+  currency: 'EUR',
+  currency_name: 'Euro',
+  languages: 'es-ES,ca,gl,eu,oc',
+  country_area: 504782,
+  country_population: 46723749,
+  asn: 'AS766',
+  org: 'Entidad Publica Empresarial Red.es'
+}
 ```
 
 We'll add this data to a new item in the `messages` array, where we also
