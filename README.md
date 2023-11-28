@@ -236,20 +236,33 @@ const availableFunctions = {
 
 This is handy because we'll be able to access the `getLocation` function
 via bracket notation and the string we got back from OpenAI, like this:
-`availableFunctions["getLocation"]`.
+`availableFunctions["getLocation"]`. 
 
 ```js
-const { finish_reason, message } = response.choices[0];
+async function agent(userInput) {
+    messages.push({
+        role: "user",
+        content: userInput,
+    });
 
-if (finish_reason === "function_call") {
-  const functionName = message.function_call.name;
-  const functionToCall = availableFunctions[functionName];
-  const functionArgs = JSON.parse(message.function_call.arguments);
-  const functionArgsArr = Object.values(functionArgs);
-  const functionResponse = await functionToCall.apply(null, functionArgsArr);
-  console.log(functionResponse);
-}
+    const response = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo-16k", // "gpt-4",
+        messages: messages,
+        functions: functionDefinitions,
+    });
+
+    const { finish_reason, message } = response.choices[0];
+
+    if (finish_reason === "function_call") {
+        const functionName = message.function_call.name;
+        const functionToCall = availableFunctions[functionName];
+        const functionArgs = JSON.parse(message.function_call.arguments);
+        const functionArgsArr = Object.values(functionArgs);
+        const functionResponse = await functionToCall.apply(null, functionArgsArr);
+        console.log(functionResponse);
+    }
 ```
+It is a sort of **strategy pattern** in which the strategy is chosen by the LLM model and the strategies are provided by the agent.
 
 We're also grabbing ahold of any arguments OpenAI wants us to pass into
 the function: `message.function_call.arguments`.
