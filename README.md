@@ -107,6 +107,10 @@ const functionDefinitions = [
 ];
 ```
 
+Search the  documentation at [/api-reference/assistants/object](https://platform.openai.com/docs/api-reference/assistants/object). Inside the `parameters` section says:
+
+> To describe a function that accepts no parameters, provide the value `{"type": "object", "properties": {}}` which is what we are doing here for `getLocation()`.
+
 ## Setting up the messages array
 
 We also need to define a `messages` array. This will keep track of all of the messages back and forth between our app and OpenAI.
