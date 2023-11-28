@@ -9,8 +9,7 @@
 - model: "gpt-4". Improved function calling support
 - model: "gpt-4-vision-preview". Ability to understand images, in addition to all other GPT-4 Turbo capabilties. Returns a maximum of 4,096 output tokens. This is a preview model version and not suited yet for production traffic
 
-**Start reading the branch [simple-input](https://github.com/ULL-prompt-engineering/cookbook-location-and-weather-per-harald/tree/simple-input) of this repository**. 
-Later, you will come back to this branch.
+Start reading the branch [simple-input](https://github.com/ULL-prompt-engineering/cookbook-location-and-weather-per-harald/tree/simple-input) of this repository.
 
 ## References
 
@@ -236,7 +235,7 @@ const availableFunctions = {
 
 This is handy because we'll be able to access the `getLocation` function
 via bracket notation and the string we got back from OpenAI, like this:
-`availableFunctions["getLocation"]`. 
+`availableFunctions["getLocation"]`.
 
 ```js
 async function agent(userInput) {
@@ -250,37 +249,74 @@ async function agent(userInput) {
         messages: messages,
         functions: functionDefinitions,
     });
-
     const { finish_reason, message } = response.choices[0];
-
+ 
     if (finish_reason === "function_call") {
-        const functionName = message.function_call.name;
-        const functionToCall = availableFunctions[functionName];
-        const functionArgs = JSON.parse(message.function_call.arguments);
-        const functionArgsArr = Object.values(functionArgs);
-        const functionResponse = await functionToCall.apply(null, functionArgsArr);
-        console.log(functionResponse);
+      const functionName = message.function_call.name;
+      const functionToCall = availableFunctions[functionName];
+      const functionArgs = JSON.parse(message.function_call.arguments);
+      const functionArgsArr = Object.values(functionArgs);
+      const functionResponse = await functionToCall.apply(null, functionArgsArr);
+      return functionResponse;
     }
+
+    return null;
+}
 ```
-It is a sort of **strategy pattern** in which the strategy is chosen by the LLM model and the strategies are provided by the agent.
 
 We're also grabbing ahold of any arguments OpenAI wants us to pass into
 the function: `message.function_call.arguments`.
 However, we won't need any arguments for this first function call.
 
 If we run the code again with the same input
-(`"Where am I located right now?"`), we'll see that `functionResponse`
-is an object filled with location about where the user is located right
-now. In my case, that is Oslo, Norway.
-
 ```js
-{ip: "193.212.60.170", network: "193.212.60.0/23", version: "IPv4", city: "Oslo", region: "Oslo County", region_code: "03", country: "NO", country_name: "Norway", country_code: "NO", country_code_iso3: "NOR", country_capital: "Oslo", country_tld: ".no", continent_code: "EU", in_eu: false, postal: "0026", latitude: 59.955, longitude: 10.859, timezone: "Europe/Oslo", utc_offset: "+0200", country_calling_code: "+47", currency: "NOK", currency_name: "Krone", languages: "no,nb,nn,se,fi", country_area: 324220, country_population: 5314336, asn: "AS2119", org: "Telenor Norge AS"}
+const response = await agent("Where am I located right now?");
+console.log("Chosen function:", deb(response));
+```
+
+we'll see that `functionResponse` is an object filled with location about where the user is located right now. In my case, that is San Cristobal de La Laguna, Spain.
+
+```
+➜  cookbook-location-and-weather-per-harald git:(function-call) ✗ node index.mjs
+```
+```js
+Chosen function: {
+  ip: '193.145.124.209',
+  network: '193.145.124.128/25',
+  version: 'IPv4',
+  city: 'San Cristóbal de La Laguna',
+  region: 'Canary Islands',
+  region_code: 'CN',
+  country: 'ES',
+  country_name: 'Spain',
+  country_code: 'ES',
+  country_code_iso3: 'ESP',
+  country_capital: 'Madrid',
+  country_tld: '.es',
+  continent_code: 'EU',
+  in_eu: true,
+  postal: '38108',
+  latitude: 28.4657,
+  longitude: -16.3086,
+  timezone: 'Atlantic/Canary',
+  utc_offset: '+0000',
+  country_calling_code: '+34',
+  currency: 'EUR',
+  currency_name: 'Euro',
+  languages: 'es-ES,ca,gl,eu,oc',
+  country_area: 504782,
+  country_population: 46723749,
+  asn: 'AS766',
+  org: 'Entidad Publica Empresarial Red.es'
+}
 ```
 
 We'll add this data to a new item in the `messages` array, where we also
 specify the name of the function we called.
 
 ```js
+...
+const functionResponse = await functionToCall.apply(null, functionArgsArr);
 messages.push({
   role: "function",
   name: functionName,
@@ -291,20 +327,28 @@ messages.push({
 });
 ```
 
+At this point you can return to the [function-call branch]([function-call branch](https://github.com/ULL-prompt-engineering/cookbook-location-and-weather-per-harald/tree/function-call)) of this repository to see the incoming code.
+
 Notice that the `role` is set to `"function"`. This tells OpenAI
-that the `content` parameter contains the result of the function call
+that the `content` parameter **contains the result of the function call**
 and not the input from the user.
 
 At this point, we need to send a new request to OpenAI with this updated
-`messages` array. However, we don’t want to hard code a new function
-call, as our agent might need to go back and forth between itself and
-GPT several times until it has found the final answer for the user.
+`messages` array. 
 
-This can be solved in several different ways, e.g. recursion, a
-while-loop, or a for-loop. We'll use a good old for-loop for the sake of
+Our agent is going to need to go back and forth between itself and
+GPT several times until the LLM  finds the final answer.
+
+This can be solved in several different ways, e.g. 
+
+- recursion, 
+- a while-loop, or 
+- a for-loop. 
+
+We'll use a good old for-loop for the sake of
 simplicity.
 
-## Creating the loop
+## Creating the loop question-function tool-new question
 
 At the top of the `agent` function, we'll create a loop that lets us run
 the entire procedure up to five times.
