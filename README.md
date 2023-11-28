@@ -220,7 +220,7 @@ The name of the function can be found in the
 
 ## Turning the OpenAI response into a function call
 
-You can switch now to the [main branch](https://github.com/ULL-prompt-engineering/cookbook-location-and-weather-per-harald/tree/main) of this repository to see the complete code.
+You can switch now to the [function-call branch](https://github.com/ULL-prompt-engineering/cookbook-location-and-weather-per-harald/tree/function-call) of this repository to see the complete code.
 
 Now that we have the name of the function as a string, we'll need to
 translate that into a function call. To help us with that, we'll gather
