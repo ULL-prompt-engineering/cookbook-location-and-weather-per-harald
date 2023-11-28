@@ -56,15 +56,24 @@ const messages = [
     },
 ];
 
+
 async function agent(userInput) {
-    messages.push([{ "role": "user", "content": userInput }]);
+    messages.push({
+        role: "user",
+        content: userInput,
+    });
+
+
     const response = await openai.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-3.5-turbo-16k", // "gpt-4",
         messages: messages,
         functions: functionDefinitions,
     });
-    console.log(deb(response));
+    console.log("response:", deb(response));
+
+    return response.choices[0].message.function_call;
 }
 
-await agent("Where am I located right now?");
+const response = await agent("Where am I located right now?");
 
+console.log("Chosen function:", deb(response));
