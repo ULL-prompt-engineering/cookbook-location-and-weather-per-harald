@@ -2,13 +2,15 @@
 
 **This tutorial does not make use of the new beta assistants API but it uses the chat completions API**.
 
-[Models you can use](https://platform.openai.com/docs/models/gpt-3-5):
+[Models you can use](https://platform.openai.com/docs/models/gpt-3-5) for this tutorial:
 
 - model: "gpt-3.5-turbo-1106". The latest GPT-3.5 Turbo model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Returns a maximum of 4,096 output tokens.
 - model: "gpt-3.5-turbo-16k". Currently points to gpt-3.5-turbo-0613. Will point to gpt-3.5-turbo-1106 starting Dec 11, 2023.
 - model: "gpt-4". Improved function calling support
 - model: "gpt-4-vision-preview". Ability to understand images, in addition to all other GPT-4 Turbo capabilties. Returns a maximum of 4,096 output tokens. This is a preview model version and not suited yet for production traffic
-  
+
+Start reading the branch [simple-input](https://github.com/ULL-prompt-engineering/cookbook-location-and-weather-per-harald/tree/simple-input) of this repository.
+
 ## References
 
 * [How to build an agent with the Node.js SDK](https://cookbook.openai.com/examples/how_to_build_an_agent_with_the_node_sdk) by Per Harald Borgen at <https://cookbook.openai.com/> Oct 2023
@@ -186,29 +188,27 @@ agent("Where am I located right now?");
 When we run the code above, we see the response from OpenAI logged out
 to the console like this:
 
+```
+➜  cookbook-location-and-weather-per-harald git:(simple-input) node index.mjs 
+```
 ```js
-{
-    id: "chatcmpl-84ojoEJtyGnR6jRHK2Dl4zTtwsa7O",
-    object: "chat.completion",
-    created: 1696159040,
-    model: "gpt-4-0613",
-    choices: [{
-        index: 0,
-        message: {
-            role: "assistant",
-            content: null,
-            function_call: {
-                name: "getLocation", // The function OpenAI wants us to call
-                arguments: "{}"
-            }
-        },
-        finish_reason: "function_call" // OpenAI wants us to call a function
-    }],
-    usage: {
-        prompt_tokens: 134,
-        completion_tokens: 6,
-        total_tokens: 140
+response: {
+  id: 'chatcmpl-8PvIJavoe15J1swANh6jY58XwXH0Y',
+  object: 'chat.completion',
+  created: 1701189131,
+  model: 'gpt-3.5-turbo-16k-0613',
+  choices: [
+    {
+      index: 0,
+      message: {
+        role: 'assistant',
+        content: null,
+        function_call: { name: 'getLocation', arguments: '{}' }
+      },
+      finish_reason: 'function_call'
     }
+  ],
+  usage: { prompt_tokens: 99, completion_tokens: 6, total_tokens: 105 }
 }
 ```
 
@@ -219,6 +219,8 @@ The name of the function can be found in the
 `"getLocation"`.
 
 ## Turning the OpenAI response into a function call
+
+You can switch now to the [main branch](https://github.com/ULL-prompt-engineering/cookbook-location-and-weather-per-harald/tree/main) of this repository to see the complete code.
 
 Now that we have the name of the function as a string, we'll need to
 translate that into a function call. To help us with that, we'll gather
