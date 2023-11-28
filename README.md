@@ -1,5 +1,14 @@
 # How to build an agent with the Node.js SDK
 
+**This tutorial does not make use of the new beta assistants API but it uses the chat completions API**.
+
+[Models you can use](https://platform.openai.com/docs/models/gpt-3-5):
+
+- model: "gpt-3.5-turbo-1106". The latest GPT-3.5 Turbo model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Returns a maximum of 4,096 output tokens.
+- model: "gpt-3.5-turbo-16k". Currently points to gpt-3.5-turbo-0613. Will point to gpt-3.5-turbo-1106 starting Dec 11, 2023.
+- model: "gpt-4". Improved function calling support
+- model: "gpt-4-vision-preview". Ability to understand images, in addition to all other GPT-4 Turbo capabilties. Returns a maximum of 4,096 output tokens. This is a preview model version and not suited yet for production traffic
+  
 ## References
 
 * [How to build an agent with the Node.js SDK](https://cookbook.openai.com/examples/how_to_build_an_agent_with_the_node_sdk) by Per Harald Borgen at <https://cookbook.openai.com/> Oct 2023
@@ -338,7 +347,7 @@ const response = await agent(
 console.log(response);
 ```
 
-Here's what we see in the console (formatted to make it easier to read):
+Here's what we see in the console:
 
 ```
 ➜  cookbook-location-and-weather-per-harald git:(main) node index.mjs 
