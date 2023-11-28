@@ -55,13 +55,15 @@ const messages = [
     },
 ];
 
+let round = 0;
+let maxConversationRounds = 5;
 async function agent(userInput) {
     messages.push({
         role: "user",
         content: userInput,
     });
 
-    for (let i = 0; i < 5; i++) {
+    for (round = 0; round < maxConversationRounds; round++) {
         const response = await openai.chat.completions.create({
             //model: "gpt-3.5-turbo-1106",
             model: "gpt-3.5-turbo-16k", // Currently points to gpt-3.5-turbo-0613. Will point to gpt-3.5-turbo-1106 starting Dec 11, 2023.
@@ -83,6 +85,7 @@ async function agent(userInput) {
                 null,
                 functionArgsArr
             );
+            console.error(`${functionName}(${functionArgsArr})`)
 
             messages.push({
                 role: "function",
@@ -98,11 +101,13 @@ async function agent(userInput) {
             return message.content;
         }
     }
-    return "The maximum number of iterations has been met without a suitable answer. Please try again with a more specific input.";
+    return `The maximum number of iterations ${maxConversationRounds} has been met without a suitable answer
+${deb(messages)}. 
+Please try again with a more specific input.`;
 }
 
 const response = await agent(
     "Please suggest some activities based on my location and the weather."
 );
 
-console.log("response:", response);
+console.log(`\nResponse obtained in ${round} rounds:\n`, response);
