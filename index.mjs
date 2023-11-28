@@ -1,3 +1,4 @@
+import deb from "./deb.mjs";
 import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, });
@@ -56,53 +57,14 @@ const messages = [
 ];
 
 async function agent(userInput) {
-    messages.push({
-        role: "user",
-        content: userInput,
+    messages.push([{ "role": "user", "content": userInput }]);
+    const response = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: messages,
+        functions: functionDefinitions,
     });
-
-    for (let i = 0; i < 5; i++) {
-        const response = await openai.chat.completions.create({
-            //model: "gpt-3.5-turbo-1106",
-            model: "gpt-3.5-turbo-16k", // Currently points to gpt-3.5-turbo-0613. Will point to gpt-3.5-turbo-1106 starting Dec 11, 2023.
-            //model: "gpt-4",
-            //model: "gpt-3.5-turbo-instruct", // gpt-3.5-turbo-instruct	Similar capabilities as text-davinci-003 but compatible with legacy Completions endpoint and not Chat Completions.
-            // model: "text-davinci-003", // does not support chat completions API
-            messages: messages,
-            functions: functionDefinitions,
-        });
-
-        const { finish_reason, message } = response.choices[0];
-
-        if (finish_reason === "function_call") {
-            const functionName = message.function_call.name;
-            const functionToCall = availableFunctions[functionName];
-            const functionArgs = JSON.parse(message.function_call.arguments);
-            const functionArgsArr = Object.values(functionArgs);
-            const functionResponse = await functionToCall.apply(
-                null,
-                functionArgsArr
-            );
-
-            messages.push({
-                role: "function",
-                name: functionName,
-                content: `
-                The result of the last function was this: ${JSON.stringify(
-                    functionResponse
-                )}
-                `,
-            });
-        } else if (finish_reason === "stop") {
-            messages.push(message);
-            return message.content;
-        }
-    }
-    return "The maximum number of iterations has been met without a suitable answer. Please try again with a more specific input.";
+    console.log(deb(response));
 }
 
-const response = await agent(
-    "Please suggest some activities based on my location and the weather."
-);
+await agent("Where am I located right now?");
 
-console.log("response:", response);

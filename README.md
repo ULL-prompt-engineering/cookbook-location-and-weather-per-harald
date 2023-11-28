@@ -152,8 +152,9 @@ async function agent(userInput) {
       content: userInput,
     },
   ]);
+ 
   const response = await openai.chat.completions.create({
-    model: "gpt-4",
+    model: models[0], 
     messages: messages,
     functions: functionDefinitions,
   });
@@ -166,8 +167,8 @@ Next, we'll send a request to the Chat completions endpoint via the
 configuration object as an argument. In it, we'll specify three
 properties:
 
-- `model` - Decides which AI model we want to use (in our case,
-  GPT-4).
+- `model` - Decides which AI model we want to use. One supporting Chat Completions like
+    "gpt-3.5-turbo-16k",   "gpt-3.5-turbo-1106", "gpt-4"
 - `messages` - The entire history of messages between the user and the
   AI up until this point.
 - `functions` - A description of the functions our app has access to.
