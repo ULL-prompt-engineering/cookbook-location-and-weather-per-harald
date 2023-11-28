@@ -340,18 +340,21 @@ console.log(response);
 
 Here's what we see in the console (formatted to make it easier to read):
 
-```js
-Based on your current location in Oslo, Norway and the weather (15°C and snowy),
-here are some activity suggestions:
+```
+➜  cookbook-location-and-weather-per-harald git:(main) node index.mjs 
+response: Based on your location in San Cristóbal de La Laguna in the Canary Islands, Spain and the current weather, here are some activity suggestions:
 
-1. A visit to the Oslo Winter Park for skiing or snowboarding.
-2. Enjoy a cosy day at a local café or restaurant.
-3. Visit one of Oslo's many museums. The Fram Museum or Viking Ship Museum offer interesting insights into Norway’s seafaring history.
-4. Take a stroll in the snowy streets and enjoy the beautiful winter landscape.
-5. Enjoy a nice book by the fireplace in a local library.
-6. Take a fjord sightseeing cruise to enjoy the snowy landscapes.
+1. Explore the historical sites: San Cristóbal de La Laguna, a UNESCO World Heritage site, has plenty of architectural gems to admire and historical sites to visit. Visit the 16th century Cathedral of La Laguna or enjoy a stroll in the city's old town. 
 
-Always remember to bundle up and stay warm. Enjoy your day!
+2. Go for a hike: The weather is rather pleasant, providing the perfect conditions for a hike. Visit the nearby Anaga Rural Park for its beautiful and scenic hiking trails.
+
+3. Visit a museum: If you're more into indoor activities, the Museum of Science and the Cosmos would be an interesting visit. 
+
+4. Enjoy local cuisine: With an abundance of restaurants and cafes around, it's a good time to sample some local Spanish and Canary Islands cuisine. 
+
+5. Relax on the beach: Though it's not too hot, the temperature is still pleasant enough to visit the local beaches like Las Teresitas.
+
+Remember to adhere to public health guidelines if you go out. Enjoy your time!
 ```
 
 If we peak under the hood, and log out `response.choices[0].message` in
