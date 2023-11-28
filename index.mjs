@@ -68,14 +68,24 @@ async function agent(userInput) {
         functions: functionDefinitions,
     });
     const { finish_reason, message } = response.choices[0];
- 
+
     if (finish_reason === "function_call") {
-      const functionName = message.function_call.name;
-      const functionToCall = availableFunctions[functionName];
-      const functionArgs = JSON.parse(message.function_call.arguments);
-      const functionArgsArr = Object.values(functionArgs);
-      const functionResponse = await functionToCall.apply(null, functionArgsArr);
-      return functionResponse;
+        const functionName = message.function_call.name;
+        const functionToCall = availableFunctions[functionName];
+        const functionArgs = JSON.parse(message.function_call.arguments);
+        const functionArgsArr = Object.values(functionArgs);
+        const functionResponse = await functionToCall.apply(null, functionArgsArr);
+
+        messages.push({
+            role: "function",
+            name: functionName,
+            content: `The result of the last function was this: ${JSON.stringify(
+                functionResponse
+            )}
+        `,
+        });
+
+        return functionResponse;
     }
 
     return null;

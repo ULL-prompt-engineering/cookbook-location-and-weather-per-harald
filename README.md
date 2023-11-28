@@ -315,6 +315,8 @@ We'll add this data to a new item in the `messages` array, where we also
 specify the name of the function we called.
 
 ```js
+...
+const functionResponse = await functionToCall.apply(null, functionArgsArr);
 messages.push({
   role: "function",
   name: functionName,
@@ -325,20 +327,28 @@ messages.push({
 });
 ```
 
+At this point you can return to the [function-call branch]([function-call branch](https://github.com/ULL-prompt-engineering/cookbook-location-and-weather-per-harald/tree/function-call)) of this repository to see the incoming code.
+
 Notice that the `role` is set to `"function"`. This tells OpenAI
-that the `content` parameter contains the result of the function call
+that the `content` parameter **contains the result of the function call**
 and not the input from the user.
 
 At this point, we need to send a new request to OpenAI with this updated
-`messages` array. However, we don’t want to hard code a new function
-call, as our agent might need to go back and forth between itself and
-GPT several times until it has found the final answer for the user.
+`messages` array. 
 
-This can be solved in several different ways, e.g. recursion, a
-while-loop, or a for-loop. We'll use a good old for-loop for the sake of
+Our agent is going to need to go back and forth between itself and
+GPT several times until the LLM  finds the final answer.
+
+This can be solved in several different ways, e.g. 
+
+- recursion, 
+- a while-loop, or 
+- a for-loop. 
+
+We'll use a good old for-loop for the sake of
 simplicity.
 
-## Creating the loop
+## Creating the loop question-function tool-new question
 
 At the top of the `agent` function, we'll create a loop that lets us run
 the entire procedure up to five times.
