@@ -350,6 +350,8 @@ simplicity.
 
 ## Creating the loop question-function tool-new question
 
+Switch now to the [main branch](https://github.com/ULL-prompt-engineering/cookbook-location-and-weather-per-harald/tree/main).
+
 At the top of the `agent` function, we'll create a loop that lets us run
 the entire procedure up to five times.
 
