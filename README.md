@@ -39,11 +39,8 @@ import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
 });
 ```
-
-Since we're running our code in a browser environment at Scrimba, we also need to set `dangerouslyAllowBrowser: true` to confirm we understand the risks involved with client-side API requests. Please note that you should move these requests over to a Node server in a production app.
 
 ## Creating our two functions
 
