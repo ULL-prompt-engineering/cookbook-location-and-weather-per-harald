@@ -220,7 +220,7 @@ The name of the function can be found in the
 
 ## Turning the OpenAI response into a function call
 
-You can switch now to the [main branch](https://github.com/ULL-prompt-engineering/cookbook-location-and-weather-per-harald/tree/main) of this repository to see the complete code.
+You can switch now to the [function-call branch](https://github.com/ULL-prompt-engineering/cookbook-location-and-weather-per-harald/tree/function-call) of this repository to see the complete code.
 
 Now that we have the name of the function as a string, we'll need to
 translate that into a function call. To help us with that, we'll gather
@@ -350,6 +350,8 @@ simplicity.
 
 ## Creating the loop question-function tool-new question
 
+Switch now to the [main branch](https://github.com/ULL-prompt-engineering/cookbook-location-and-weather-per-harald/tree/main).
+
 At the top of the `agent` function, we'll create a loop that lets us run
 the entire procedure up to five times.
 
@@ -361,39 +363,49 @@ If we get `finish_reason: "stop"` back, then GPT has found a suitable
 answer, so we'll return the function and cancel the loop.
 
 ```js
-for (let i = 0; i < 5; i++) {
-  const response = await openai.chat.completions.create({
-    model: "gpt-4",
-    messages: messages,
-    functions: functionDefinitions,
-  });
-  const { finish_reason, message } = response.choices[0];
+let round = 0;
+let maxConversationRounds = 5;
+async function agent(userInput) {
+    messages.push({ role: "user", content: userInput, });
 
-  if (finish_reason === "function_call") {
-    const functionName = message.function_call.name;
-    const functionToCall = availableFunctions[functionName];
-    const functionArgs = JSON.parse(message.function_call.arguments);
-    const functionArgsArr = Object.values(functionArgs);
-    const functionResponse = await functionToCall.apply(null, functionArgsArr);
+    for (round = 0; round < maxConversationRounds; round++) {
+        const response = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo-16k", // Currently points to gpt-3.5-turbo-0613. Will point 
+            messages: messages,
+            functions: functionDefinitions,
+        });
 
-    messages.push({
-      role: "function",
-      name: functionName,
-      content: `
-          The result of the last function was this: ${JSON.stringify(
-            functionResponse
-          )}
-          `,
-    });
-  } else if (finish_reason === "stop") {
-    messages.push(message);
-    return message.content;
-  }
+        const { finish_reason, message } = response.choices[0];
+
+        if (finish_reason === "function_call") {
+            const functionName = message.function_call.name;
+            const functionToCall = availableFunctions[functionName];
+            const functionArgs = JSON.parse(message.function_call.arguments);
+            const functionArgsArr = Object.values(functionArgs);
+            const functionResponse = await functionToCall.apply(null, functionArgsArr);
+            console.error(`${functionName}(${functionArgsArr})`)
+
+            messages.push({
+                role: "function",
+                name: functionName,
+                content: `
+                The result of the last function was this: ${JSON.stringify(
+                    functionResponse
+                )}
+                `,
+            });
+        } else if (finish_reason === "stop") {
+            messages.push(message);
+            return message.content;
+        }
+    }
+    return `The maximum number of iterations ${maxConversationRounds} has been met without a suitable answer
+${deb(messages)}. 
+Please try again with a more specific input.`;
 }
-return "The maximum number of iterations has been met without a suitable answer. Please try again with a more specific input.";
 ```
 
-If we don't see a `finish_reason: "stop"` within our five iterations,
+If we don't see a `finish_reason: "stop"` within our `maxConversationRounds` iterations,
 we'll return a message saying we couldn’t find a suitable answer.
 
 ## Running the final app
@@ -433,129 +445,15 @@ both our functions before coming up with an answer.
 
 First, it tells us to call the `getLocation` function. Then it tells us
 to call the `getCurrentWeather` function with
-`"longitude": "10.859", "latitude": "59.955"` passed in as the
+`"longitude": "-16.3", "latitude": "28.5"` passed in as the
 arguments. This is data it got back from the first function call we did.
 
 ```js
 {role: "assistant", content: null, function_call: {name: "getLocation", arguments: "{}"}}
-{role: "assistant", content: null, function_call: {name: "getCurrentWeather", arguments: " { "longitude": "10.859", "latitude": "59.955" }"}}
+{role: "assistant", content: null, function_call: {name: "getCurrentWeather", arguments: " { "longitude": "-16.3", "latitude": "28.5" }"}}
 ```
 
-You've now built an AI agent using OpenAI functions and the Node.js SDK! If you're looking for an extra challenge, consider enhancing this app. For example, you could add a function that fetches up-to-date information on events and activities in the user's location.
+If you're looking for an extra challenge, consider enhancing this app. For example, you could add a function that fetches up-to-date information on events and activities in the user's location. See for instance <https://docs.predicthq.com/getting-started/api-quickstart>
 
-Happy coding!
 
-<details>
-<summary>Complete code</summary>
-
-```js
-import OpenAI from "openai";
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
-});
-
-async function getLocation() {
-  const response = await fetch("https://ipapi.co/json/");
-  const locationData = await response.json();
-  return locationData;
-}
-
-async function getCurrentWeather(latitude, longitude) {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=apparent_temperature`;
-  const response = await fetch(url);
-  const weatherData = await response.json();
-  return weatherData;
-}
-
-const functionDefinitions = [
-  {
-    name: "getCurrentWeather",
-    description:
-      "Get the current weather in a given location given in latitude and longitude",
-    parameters: {
-      type: "object",
-      properties: {
-        latitude: {
-          type: "string",
-        },
-        longitude: {
-          type: "string",
-        },
-      },
-      required: ["longitude", "latitude"],
-    },
-  },
-  {
-    name: "getLocation",
-    description: "Get the user's location based on their IP address",
-    parameters: {
-      type: "object",
-      properties: {},
-    },
-  },
-];
-
-const availableFunctions = {
-  getCurrentWeather,
-  getLocation,
-};
-
-const messages = [
-  {
-    role: "system",
-    content: `You are a helpful assistant. Only use the functions you have been provided with.`,
-  },
-];
-
-async function agent(userInput) {
-  messages.push({
-    role: "user",
-    content: userInput,
-  });
-
-  for (let i = 0; i < 5; i++) {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: messages,
-      functions: functionDefinitions,
-    });
-
-    const { finish_reason, message } = response.choices[0];
-
-    if (finish_reason === "function_call") {
-      const functionName = message.function_call.name;
-      const functionToCall = availableFunctions[functionName];
-      const functionArgs = JSON.parse(message.function_call.arguments);
-      const functionArgsArr = Object.values(functionArgs);
-      const functionResponse = await functionToCall.apply(
-        null,
-        functionArgsArr
-      );
-
-      messages.push({
-        role: "function",
-        name: functionName,
-        content: `
-                The result of the last function was this: ${JSON.stringify(
-                  functionResponse
-                )}
-                `,
-      });
-    } else if (finish_reason === "stop") {
-      messages.push(message);
-      return message.content;
-    }
-  }
-  return "The maximum number of iterations has been met without a suitable answer. Please try again with a more specific input.";
-}
-
-const response = await agent(
-  "Please suggest some activities based on my location and the weather."
-);
-
-console.log("response:", response);
-```
-
-</details>
+See the code at [main branch](https://github.com/ULL-prompt-engineering/cookbook-location-and-weather-per-harald/tree/main) in repo `ULL-prompt-engineering/cookbook-location-and-weather-per-harald` at GitHub.
