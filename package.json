@@ -1,0 +1,19 @@
+{
+  "name": "cookbook-location-and-weather-per-harald",
+  "version": "1.0.0",
+  "description": "https://cookbook.openai.com/examples/how_to_build_an_agent_with_the_node_sdk",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+      "openai": "^4.20.0"  
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Casiano Rodriguez Leon <crguezl@ull.edu.es> (https://crguezl.github.io/)",
+  "license": "ISC"
+}
