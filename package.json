@@ -12,7 +12,8 @@
   },
   "scripts": {
     "save": "git ci -am 'save' && git push",
-    "open-meteo": "ts-node open-meteo/example-2.ts"
+    "open-meteo": "ts-node open-meteo/example-2.ts",
+    "meteo": "source open-meteo/example-1.sh"
   },
   "keywords": [],
   "author": "Casiano Rodriguez Leon <crguezl@ull.edu.es> (https://crguezl.github.io/)",
