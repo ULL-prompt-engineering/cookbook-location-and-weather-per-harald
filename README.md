@@ -21,9 +21,23 @@ Start reading the branch [simple-input](https://github.com/ULL-prompt-engineerin
 
 ## Introduction
 
-OpenAI functions enable your app to take action based on user inputs. This means that it can, e.g., search the web, send emails, or book tickets on behalf of your users, making it more powerful than a regular chatbot.
+Prompt Engineers can now use models like `gpt-4-0613` and `gpt-3.5-turbo-0613` to describe the signature of functions. These models have been fine-tuned to identify when a function call is needed based on user input and to produce JSON that matches the function's signature. This allows for more reliable retrieval of structured data. 
 
-In this tutorial, you will build an app that uses OpenAI functions along with the latest version of the Node.js SDK. 
+Examples include 
+
+- turning a request to email someone into a `send_email` function call or 
+- converting a question about the weather into a `get_current_weather` function call
+- a query about top customers can be transformed into an API call like `get_customers_by_revenue`
+- a question about a company's orders into a SQL query
+- book tickets on behalf of your users
+  
+In this tutorial, we will build an app that uses OpenAI functions along using the Node.js SDK. 
+
+```
+✗ npm ls openai
+cookbook-location-and-weather-per-harald@1.0.0 /Users/casianorodriguezleon/campus-virtual/2223/learning/openai-learning/assistant-api/cookbook-location-and-weather-per-harald
+└── openai@4.20.1
+```
 
 ## What you will build
 
