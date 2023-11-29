@@ -67,6 +67,7 @@ async function agent(userInput) {
         messages: messages,
         functions: functionDefinitions,
     });
+
     const { finish_reason, message } = response.choices[0];
 
     if (finish_reason === "function_call") {
@@ -92,5 +93,5 @@ async function agent(userInput) {
 }
 
 const response = await agent("Where am I located right now?");
-
+// const response = await  agent("What is the weather in the place with latitude 28.3743 and longitude -16.712?");
 console.log("Chosen function:", deb(response));
