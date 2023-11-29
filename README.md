@@ -277,8 +277,22 @@ Every response will include a `finish_reason`. The possible values for `finish_r
 
 Depending on input parameters, the model response may include different information.
 
-We're also grabbing ahold of any arguments OpenAI wants us to pass into
+We're also using the `message` object from `response.choices[0]`. It will look like this:
+
+```js
+{
+  role: 'assistant',
+  content: null,
+  function_call: {
+    name: 'getCurrentWeather',
+    arguments: '{\n"latitude": "28.4803712",\n"longitude": "-16.315"\n}'
+  }
+}
+```
+
+for grabbing ahold of any arguments the LLM wants us to pass into
 the function: `message.function_call.arguments`.
+
 However, we won't need any arguments for this first function call.
 
 If we run the code again with the same input

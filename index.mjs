@@ -1,3 +1,4 @@
+import { deb } from "./utils.mjs"
 import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, });
@@ -107,6 +108,7 @@ async function agent(userInput) {
                 null,
                 functionArgsArr
             );
+            console.error(deb(message));
             console.error(`Calling ${functionName}(${functionArgsArr})`)
 
             messages.push({
