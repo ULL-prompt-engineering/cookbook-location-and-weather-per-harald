@@ -267,6 +267,16 @@ async function agent(userInput) {
 }
 ```
 
+Every response will include a `finish_reason`. The possible values for `finish_reason` are:
+
+- `stop`: API returned complete message, or a message terminated by one of the stop sequences provided via the [stop](https://platform.openai.com/docs/api-reference/chat/create#chat/create-stop) parameter
+- `length`: Incomplete model output due to [max_tokens](https://platform.openai.com/docs/api-reference/chat/create#chat/create-max_tokens) parameter or token limit
+- `function_call`: The model decided to call a function
+- `content_filter`: Omitted content due to a flag from OpenAI content filters
+- `null`: API response still in progress or incomplete
+
+Depending on input parameters, the model response may include different information.
+
 We're also grabbing ahold of any arguments OpenAI wants us to pass into
 the function: `message.function_call.arguments`.
 However, we won't need any arguments for this first function call.
