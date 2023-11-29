@@ -1,0 +1,3 @@
+Gives the weather for the **current date starting from the current hour* in a given location specified by its latitude and longitude. 
+The `hourly` field is an object that contains contains two arrays `time`, with the times and 
+`temperature_2m` with the corresponding temperatures. Use the returned object fields to describe the weather.

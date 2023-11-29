@@ -1,30 +1,12 @@
-import { deb } from "./utils.mjs"
+import { deb, green } from "./utils.mjs"
+import fs from "fs";
 import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, });
 
-const getCurrentWeatherDescription = 
-`Get the current weather in a given location given in latitude and longitude
-Returns a object with fields like:
-    {
-        "latitude": 52.52,
-        "longitude": 13.419,
-        "elevation": 44.812,
-        "generationtime_ms": 2.2119,
-        "utc_offset_seconds": 0,
-        "timezone": "Europe/Berlin",
-        "timezone_abbreviation": "CEST",
-        "hourly": {
-            "time": ["2022-07-01T00:00", "2022-07-01T01:00", "2022-07-01T02:00", ...],
-            "temperature_2m": [13, 12.7, 12.7, 12.5, 12.5, 12.8, 13, 12.9, 13.3, ...]
-        },
-        "hourly_units": {
-            "temperature_2m": "°C"
-        }
-    }
-The hourly field is an object that contains contains the hourly forecast for the next hours. 
-Use that field to predict the weather for the next hours.
-`;
+const getCurrentWeatherDescription = fs.readFileSync("getCurrentWeatherDescription.txt", "utf8");
+console.log(`getCurrentWeatherDescription: ${getCurrentWeatherDescription}`);
+
 async function getLocation() {
     const response = await fetch("https://ipapi.co/json/");
     const locationData = await response.json();
@@ -41,8 +23,7 @@ async function getCurrentWeather(latitude, longitude) {
 const functionDefinitions = [
     {
         name: "getCurrentWeather",
-        description:
-            "Get the current weather in a given location given in latitude and longitude",
+        description: getCurrentWeatherDescription.trim(),
         parameters: {
             type: "object",
             properties: {
@@ -58,7 +39,7 @@ const functionDefinitions = [
     },
     {
         name: "getLocation",
-        description: "Get the user's location based on their IP address",
+        description: "Needed when you have to find the user's location based on the client IP address",
         parameters: {
             type: "object",
             properties: {},
@@ -108,8 +89,9 @@ async function agent(userInput) {
                 null,
                 functionArgsArr
             );
-            console.error(deb(message));
+            console.error(deb(green(message)));
             console.error(`Calling ${functionName}(${functionArgsArr})`)
+            console.error(`Response: ${deb(functionResponse)}`)
 
             messages.push({
                 role: "function",
@@ -134,9 +116,13 @@ Please try again with a more specific input.`;
 const response = await agent(
     "Please suggest some activities based on my location and the weather."
 );
+const response = await agent(
+"Please tell me where is the place with latitude 28.4803712 and longitude -16.315 and "+ 
+"make a summary of how will be the weather in that place today during afternoon"
+);
 */
 const response = await agent(
-    "Please tell me where is the place with latitude 28.4803712 and longitude -16.315how and what will be the weather there today"
-);
-
+    "Please tell me of how will be the weather in my place today during afternoon"
+    );
 console.log(`\nResponse obtained in ${round} rounds:\n`, response);
+process.exit(0);
