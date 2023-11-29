@@ -42,14 +42,15 @@ cookbook-location-and-weather-per-harald@1.0.0 /Users/casianorodriguezleon/campu
 ## What you will build
 
 Our app is a simple agent that helps you find activities in your area.
-It has access to two functions, `getLocation()` and `getCurrentWeather()`,
+It has access to two functions, 
+
+- `getLocation()` and 
+- `getCurrentWeather(latitude, longitude)`.
+  
 which means it can figure out where you’re located and what the weather
 is at the moment.
 
-At this point, it's important to understand that
-OpenAI doesn't execute any code for you. It just tells your app which
-functions it should use in a given scenario, and then leaves it up to
-your app to invoke them.
+**The LLM doesn't execute any code for you. It just tells your app which functions it should use in a given scenario, and then leaves it up to your app to invoke them**.
 
 Once our agent knows your location and the weather, it'll use GPT’s
 internal knowledge to suggest suitable local activities for you.
