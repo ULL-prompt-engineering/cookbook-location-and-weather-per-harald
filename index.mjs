@@ -2,6 +2,28 @@ import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, });
 
+const getCurrentWeatherDescription = 
+`Get the current weather in a given location given in latitude and longitude
+Returns a object with fields like:
+    {
+        "latitude": 52.52,
+        "longitude": 13.419,
+        "elevation": 44.812,
+        "generationtime_ms": 2.2119,
+        "utc_offset_seconds": 0,
+        "timezone": "Europe/Berlin",
+        "timezone_abbreviation": "CEST",
+        "hourly": {
+            "time": ["2022-07-01T00:00", "2022-07-01T01:00", "2022-07-01T02:00", ...],
+            "temperature_2m": [13, 12.7, 12.7, 12.5, 12.5, 12.8, 13, 12.9, 13.3, ...]
+        },
+        "hourly_units": {
+            "temperature_2m": "°C"
+        }
+    }
+The hourly field is an object that contains contains the hourly forecast for the next hours. 
+Use that field to predict the weather for the next hours.
+`;
 async function getLocation() {
     const response = await fetch("https://ipapi.co/json/");
     const locationData = await response.json();
@@ -106,8 +128,13 @@ ${deb(messages)}.
 Please try again with a more specific input.`;
 }
 
+/*
 const response = await agent(
     "Please suggest some activities based on my location and the weather."
+);
+*/
+const response = await agent(
+    "Please tell me where is the place with latitude 28.4803712 and longitude -16.315how and what will be the weather there today"
 );
 
 console.log(`\nResponse obtained in ${round} rounds:\n`, response);
