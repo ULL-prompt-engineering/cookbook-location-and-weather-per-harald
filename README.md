@@ -31,7 +31,7 @@ Examples include
 - a question about a company's orders into a SQL query
 - book tickets on behalf of your users
   
-In this tutorial, we will build an app that uses OpenAI functions along using the Node.js SDK. 
+In this tutorial, we will build an app that uses OpenAI functions along using the Node.js SDK: 
 
 ```
 ✗ npm ls openai
