@@ -172,10 +172,13 @@ properties:
 - `model` - Decides which AI model we want to use. One supporting Chat Completions like
     "gpt-3.5-turbo-16k",   "gpt-3.5-turbo-1106", "gpt-4"
 - `messages` - The entire history of messages between the user and the
-  AI up until this point.
+  AI up until this point. Messages must be an array of message objects, where each object has a role (either "`system`", "`user`", or "`assistant`") and `content`. 
+  Conversations can be as short as one message or many back and forth turns.
 - `functions` - A description of the functions our app has access to.
   Here, we'll we use the `functionDefinitions` array we created
   earlier.
+
+See [the full API reference documentation for the Chat API](https://platform.openai.com/docs/api-reference/chat)
 
 ## Running our app with a simple input
 
