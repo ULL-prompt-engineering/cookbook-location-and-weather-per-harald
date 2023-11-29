@@ -107,7 +107,7 @@ async function agent(userInput) {
                 null,
                 functionArgsArr
             );
-            console.error(`${functionName}(${functionArgsArr})`)
+            console.error(`Calling ${functionName}(${functionArgsArr})`)
 
             messages.push({
                 role: "function",
