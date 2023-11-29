@@ -21,7 +21,7 @@ Start reading the branch [simple-input](https://github.com/ULL-prompt-engineerin
 
 ## Introduction
 
-Prompt Engineers can now use models like `gpt-4-0613` and `gpt-3.5-turbo-0613` to describe the signature of functions. These models have been fine-tuned to identify when a function call is needed based on user input and to produce JSON that matches the function's signature. This allows for more reliable retrieval of structured data. 
+Prompt Engineers [can now](https://openai.com/blog/function-calling-and-other-api-updates) use models like `gpt-4-0613` and `gpt-3.5-turbo-0613` to describe the signature of functions. These models have been fine-tuned to identify when a function call is needed based on user input and to produce JSON that matches the function's signature. This allows for more reliable retrieval of structured data. 
 
 Examples include 
 
